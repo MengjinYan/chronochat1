@@ -184,6 +184,10 @@ private slots:
   void
   onInvitationInterest(const Name& prefix, const Interest& interest, size_t routingPrefixOffset);
 
+  //ymj
+  void
+  onChatroomDiscovery();
+
 private: // private member
   typedef std::map<std::string, QAction*> ChatActionList;
   typedef std::map<std::string, ChatDialog*> ChatDialogList;
@@ -211,6 +215,9 @@ private: // private member
   ChatActionList   m_chatActionList;
   ChatActionList   m_closeActionList;
 
+  //ymj
+  QAction*       m_chatroomDiscovery;
+
   // Dialogs
   SettingDialog*       m_settingDialog;
   StartChatDialog*     m_startChatDialog;
@@ -220,7 +227,7 @@ private: // private member
   BrowseContactDialog* m_browseContactDialog;
   AddContactPanel*     m_addContactPanel;
   ChatDialogList       m_chatDialogList;
-
+  
   // Conf
   Name m_identity;
   std::string m_nick;

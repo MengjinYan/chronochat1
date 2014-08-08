@@ -13,6 +13,7 @@
 #include <QDir>
 #include <QTimer>
 #include "controller.hpp"
+#include "chatroom-discovery.h"
 
 #ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
@@ -315,6 +316,19 @@ Controller::createActions()
 
   m_quitAction = new QAction(tr("Quit"), this);
   connect(m_quitAction, SIGNAL(triggered()), this, SLOT(onQuitAction()));
+
+  //ymj
+  m_chatroomDiscovery = new QAction(tr("Ongoing Chatrooms"), this);
+  connect(m_chatroomDiscovery, SIGNAL(triggered()), this, SLOT(onChatroomDiscovery()));
+
+}
+
+  //ymj
+
+void
+Controller::onChatroomDiscovery()
+{
+  //std::cout << "lalala";
 }
 
 void
@@ -338,6 +352,9 @@ Controller::createTrayIcon()
   m_closeMenu->setEnabled(false);
   m_trayIconMenu->addSeparator();
   m_trayIconMenu->addAction(m_quitAction);
+
+  //ymj
+  m_trayIconMenu->addAction(m_chatroomDiscovery);
 
   m_trayIcon = new QSystemTrayIcon(this);
   m_trayIcon->setContextMenu(m_trayIconMenu);
@@ -386,6 +403,9 @@ Controller::updateMenu()
   menu->addSeparator();
   menu->addAction(m_quitAction);
 
+  //ymj
+  menu->addAction(m_chatroomDiscovery);
+
   m_trayIcon->setContextMenu(menu);
   delete m_trayIconMenu;
   m_trayIconMenu = menu;
@@ -400,8 +420,11 @@ Controller::onLocalPrefix(const Interest& interest, Data& data)
     .trimmed();
 
   Name localPrefix(localPrefixStr.toStdString());
-  if (m_localPrefix.empty() || m_localPrefix != localPrefix)
+  if (m_localPrefix.empty() || m_localPrefix != localPrefix) {
+    //ymj
+    std::cout << "localprefix: " << m_localPrefix.toUri() << std::endl;
     emit localPrefixUpdated(localPrefixStr);
+  }
 }
 
 void
@@ -410,8 +433,11 @@ Controller::onLocalPrefixTimeout(const Interest& interest)
   QString localPrefixStr("/private/local");
 
   Name localPrefix(localPrefixStr.toStdString());
-  if (m_localPrefix.empty() || m_localPrefix != localPrefix)
+  if (m_localPrefix.empty() || m_localPrefix != localPrefix) {
+    //ymj
+    std::cout << "localprefix: " << m_localPrefix.toUri() << std::endl;
     emit localPrefixUpdated(localPrefixStr);
+  }
 }
 
 void
@@ -558,6 +584,7 @@ void
 Controller::onLocalPrefixUpdated(const QString& localPrefix)
 {
   m_localPrefix = Name(localPrefix.toStdString());
+  std::cout << "localprefix: " << m_localPrefix.toUri() << std::endl;
 }
 
 void
@@ -676,6 +703,7 @@ Controller::onStartChatroom(const QString& chatroomName, bool secured)
   }
 
   // TODO: We should create a chatroom specific key/cert (which should be created in the first half of this method, but let's use the default one for now.
+  std::cout << "start chat room localprefix: " << m_localPrefix.toUri() << std::endl;
   shared_ptr<IdentityCertificate> idCert = m_keyChain.getCertificate(m_keyChain.getDefaultCertificateNameForIdentity(m_identity));
   ChatDialog* chatDialog = new ChatDialog(&m_contactManager, m_face, *idCert, chatroomPrefix, m_localPrefix, m_nick, secured);
 
